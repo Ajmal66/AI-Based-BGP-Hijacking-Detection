@@ -335,11 +335,18 @@ Future development may include:
 
 ## 🎓 Academic Project
 
-This project was developed as a **Final Year Project** to investigate the application of Artificial Intelligence and Machine Learning techniques for detecting potential BGP hijacking events.
 
-### Project Area
+This project was developed as a **Final Year Project** in the field of:
 
 **Cybersecurity | Network Security | BGP Security | Artificial Intelligence | Machine Learning**
+
+### Academic Achievement
+
+🏆 **Grade: A**
+
+The project was successfully evaluated and awarded an **A grade** as part of the university's Final Year Project assessment..
+
+
 
 ---
 
