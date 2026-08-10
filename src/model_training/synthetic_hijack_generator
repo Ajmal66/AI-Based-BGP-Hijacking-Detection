@@ -1,0 +1,347 @@
+# import pandas as pd
+# import numpy as np
+
+
+# class SyntheticHijackGenerator:
+
+#     def load_data(self):
+
+#         return pd.read_csv(
+#             "datasets/processed/feature_dataset.csv",
+#             low_memory=False
+#         )
+
+#     # -------------------------
+#     # NORMAL ROUTES
+#     # -------------------------
+#     def extract_normal(self, df):
+
+#         normal_df = df.copy()
+#         normal_df["label"] = 0
+
+#         return normal_df
+
+#     # -------------------------
+#     # HJACK GENERATION
+#     # -------------------------
+#     def generate_hijacks(self, df):
+
+#         hijack_df = df.sample(
+#             n=30000,
+#             random_state=42
+#         ).copy()
+
+#         hijack_df["label"] = 1
+
+#         # 1. Origin ASN hijack
+#         hijack_df["as_path"] = hijack_df["as_path"].apply(
+#             lambda x: self._modify_origin(x)
+#         )
+
+#         hijack_df["origin_asn"] = hijack_df["as_path"].apply(
+#             lambda x: str(x).split()[-1]
+#         )
+
+#         # 2. Short path attack
+#         mask = np.random.rand(len(hijack_df)) < 0.5
+#         hijack_df.loc[mask, "as_path"] = "99999"
+
+#         hijack_df["as_path_length"] = hijack_df["as_path"].apply(
+#             lambda x: len(str(x).split())
+#         )
+
+#         hijack_df["unique_as_count"] = hijack_df["as_path_length"]
+
+#         return hijack_df
+
+#     # -------------------------
+#     # MODIFY ORIGIN ASN
+#     # -------------------------
+#     def _modify_origin(self, as_path):
+
+#         parts = str(as_path).split()
+
+#         if len(parts) > 1:
+#             parts[-1] = "99999"
+
+#         return " ".join(parts)
+
+#     # -------------------------
+#     # MERGE DATASET
+#     # -------------------------
+#     def merge(self, normal_df, hijack_df):
+
+#         final_df = pd.concat(
+#             [normal_df, hijack_df],
+#             ignore_index=True
+#         )
+
+#         return final_df.sample(frac=1, random_state=42)
+
+#     # -------------------------
+#     # SAVE FILES
+#     # -------------------------
+#     def save(self, normal_df, hijack_df, final_df):
+
+#         normal_df.to_csv(
+#             "datasets/processed/normal_routes.csv",
+#             index=False
+#         )
+
+#         hijack_df.to_csv(
+#             "datasets/processed/hijack_routes.csv",
+#             index=False
+#         )
+
+#         final_df.to_csv(
+#             "datasets/processed/labeled_dataset.csv",
+#             index=False
+#         )
+
+#         print("\nSaved all datasets:")
+#         print("- normal_routes.csv")
+#         print("- hijack_routes.csv")
+#         print("- labeled_dataset.csv")
+
+
+# def main():
+
+#     generator = SyntheticHijackGenerator()
+
+#     df = generator.load_data()
+
+#     print(f"Loaded: {len(df)} rows")
+
+#     normal_df = generator.extract_normal(df)
+
+#     hijack_df = generator.generate_hijacks(df)
+
+#     final_df = generator.merge(normal_df, hijack_df)
+
+#     generator.save(normal_df, hijack_df, final_df)
+
+#     print("\nFinal dataset size:", len(final_df))
+
+
+# if __name__ == "__main__":
+#     main()
+
+import pandas as pd
+import numpy as np
+
+
+class SyntheticHijackGenerator:
+
+    def load_data(self):
+
+        return pd.read_csv(
+            "datasets/processed/feature_dataset.csv",
+            low_memory=False
+        )
+
+    # ----------------------------------------------------
+    # NORMAL ROUTES
+    # ----------------------------------------------------
+    def extract_normal(self, df):
+
+        normal_df = df.copy()
+        normal_df["label"] = 0
+
+        return normal_df
+
+    # ----------------------------------------------------
+    # SYNTHETIC HIJACK GENERATION
+    # ----------------------------------------------------
+    def generate_hijacks(self, df):
+
+        hijack_df = df.sample(
+            n=30000,
+            random_state=42
+        ).copy()
+
+        hijack_df["label"] = 1
+
+        # -----------------------------------
+        # Attack 1
+        # Replace Origin ASN
+        # -----------------------------------
+
+        hijack_df["as_path"] = hijack_df["as_path"].apply(
+            self._modify_origin
+        )
+
+        # -----------------------------------
+        # Attack 2
+        # Extremely short path
+        # -----------------------------------
+
+        mask = np.random.rand(len(hijack_df)) < 0.5
+
+        hijack_df.loc[
+            mask,
+            "as_path"
+        ] = "99999"
+
+        # -----------------------------------
+        # Recalculate ALL derived features
+        # -----------------------------------
+
+        hijack_df["origin_asn"] = hijack_df["as_path"].apply(
+            self._get_origin
+        )
+
+        hijack_df["as_path_length"] = hijack_df["as_path"].apply(
+            self._path_length
+        )
+
+        hijack_df["unique_as_count"] = hijack_df["as_path"].apply(
+            self._unique_count
+        )
+
+        hijack_df["origin_position"] = hijack_df["as_path"].apply(
+            self._origin_position
+        )
+
+        hijack_df["is_origin_at_end"] = hijack_df.apply(
+            self._origin_at_end,
+            axis=1
+        )
+
+        hijack_df["is_prepended"] = hijack_df["as_path"].apply(
+            self._is_prepended
+        )
+
+        return hijack_df
+
+    # ----------------------------------------------------
+    # Modify Origin ASN
+    # ----------------------------------------------------
+
+    def _modify_origin(self, as_path):
+
+        parts = str(as_path).split()
+
+        if len(parts) > 1:
+            parts[-1] = "99999"
+
+        else:
+            parts = ["99999"]
+
+        return " ".join(parts)
+
+    # ----------------------------------------------------
+    # Feature Calculations
+    # ----------------------------------------------------
+
+    def _get_origin(self, as_path):
+
+        parts = str(as_path).split()
+
+        if len(parts) == 0:
+            return ""
+
+        return parts[-1]
+
+    def _path_length(self, as_path):
+
+        return len(str(as_path).split())
+
+    def _unique_count(self, as_path):
+
+        return len(set(str(as_path).split()))
+
+    def _origin_position(self, as_path):
+
+        parts = str(as_path).split()
+
+        if len(parts) == 0:
+            return -1
+
+        origin = parts[-1]
+
+        return parts.index(origin)
+
+    def _origin_at_end(self, row):
+
+        parts = str(row["as_path"]).split()
+
+        if len(parts) == 0:
+            return 0
+
+        return int(parts[-1] == str(row["origin_asn"]))
+
+    def _is_prepended(self, as_path):
+
+        parts = str(as_path).split()
+
+        return int(len(parts) != len(set(parts)))
+
+    # ----------------------------------------------------
+    # Merge
+    # ----------------------------------------------------
+
+    def merge(self, normal_df, hijack_df):
+
+        final_df = pd.concat(
+            [normal_df, hijack_df],
+            ignore_index=True
+        )
+
+        return final_df.sample(
+            frac=1,
+            random_state=42
+        ).reset_index(drop=True)
+
+    # ----------------------------------------------------
+    # Save
+    # ----------------------------------------------------
+
+    def save(self, normal_df, hijack_df, final_df):
+
+        normal_df.to_csv(
+            "datasets/processed/normal_routes.csv",
+            index=False
+        )
+
+        hijack_df.to_csv(
+            "datasets/processed/hijack_routes.csv",
+            index=False
+        )
+
+        final_df.to_csv(
+            "datasets/processed/labeled_dataset.csv",
+            index=False
+        )
+
+        print("\nSaved all datasets:")
+        print("- normal_routes.csv :", len(normal_df))
+        print("- hijack_routes.csv :", len(hijack_df))
+        print("- labeled_dataset.csv :", len(final_df))
+
+
+def main():
+
+    generator = SyntheticHijackGenerator()
+
+    df = generator.load_data()
+
+    print(f"Loaded: {len(df)} rows")
+
+    normal_df = generator.extract_normal(df)
+
+    hijack_df = generator.generate_hijacks(df)
+
+    final_df = generator.merge(
+        normal_df,
+        hijack_df
+    )
+
+    generator.save(
+        normal_df,
+        hijack_df,
+        final_df
+    )
+
+
+if __name__ == "__main__":
+    main()
