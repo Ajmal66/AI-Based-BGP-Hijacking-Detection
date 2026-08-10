@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <div class="card shadow p-4">
+
+        <h2>User Guide</h2>
+
+        <hr>
+
+        <h4>1. Supported Dataset Formats</h4>
+
+        <ul>
+            <li>Custom CSV Files</li>
+            <li>RIPE RIS Dumps (.gz)</li>
+            <li>RouteViews Dumps (.bz2)</li>
+        </ul>
+
+        <hr>
+
+        <h4>2. Download Sample Dataset</h4>
+
+        <p>
+            Use the sample CSV to understand the required structure.
+        </p>
+        <div>
+        <a href="/sample-csv"
+           class="btn btn-primary">
+            Download Sample CSV
+        </a>
+</div>
+        <hr>
+
+<h4>3. Download RIPE RIS Data</h4>
+
+<p>
+    RIPE RIS archives contain BGP routing information collected from multiple collectors.
+</p>
+
+<div class="alert alert-info">
+    For this system, download <strong>UPDATE files only</strong>.
+    UPDATE files contain BGP announcements and withdrawals required for hijack detection.
+    Full RIB snapshots are not recommended.
+</div>
+
+<div class="d-flex gap-2 flex-wrap">
+
+    <a href="https://data.ris.ripe.net/"
+       target="_blank"
+       class="btn btn-outline-secondary">
+        RIPE RIS Archive
+    </a>
+
+    <a href="https://data.ris.ripe.net/rrc00/2026.06/"
+       target="_blank"
+       class="btn btn-primary">
+        Download June 2026 Updates
+    </a>
+
+</div>
+
+<hr>
+
+<h4>4. Download RouteViews Data</h4>
+
+<p>
+    RouteViews archives provide historical BGP update messages collected from Internet exchange points worldwide.
+</p>
+
+<div class="alert alert-info">
+    For best results, download <strong>UPDATE files only</strong>.
+    Files are typically provided in <strong>.bz2</strong> format and are supported directly by the system.
+</div>
+
+<div class="d-flex gap-2 flex-wrap">
+
+    <a href="https://archive.routeviews.org/"
+       target="_blank"
+       class="btn btn-outline-secondary">
+        RouteViews Archive
+    </a>
+
+    <a href="https://archive.routeviews.org/route-views2/bgpdata/2026.06/UPDATES/"
+       target="_blank"
+       class="btn btn-primary">
+        Download June 2026 Updates
+    </a>
+
+</div>
+
+        <hr>
+
+        <h4>5. Required CSV Columns</h4>
+
+        <p>
+            Custom CSV files must contain the following columns:
+        </p>
+
+        <ul>
+            <li>prefix_length</li>
+            <li>as_path_length</li>
+            <li>unique_as_count</li>
+            <li>is_prepended</li>
+            <li>origin_position</li>
+            <li>is_origin_at_end</li>
+            <li>peer_asn</li>
+            <li>as_path (required for LSTM model)</li>
+        </ul>
+
+        <hr>
+
+        <h4>6. Model Selection</h4>
+
+        <table class="table table-bordered">
+
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Random Forest</td>
+                    <td>Fast and suitable for general BGP anomaly detection.</td>
+                </tr>
+
+                <tr>
+                    <td>SVM</td>
+                    <td>Conservative classifier with slower processing time than other models.</td>
+                </tr>
+
+                <tr>
+                    <td>LSTM</td>
+                    <td>Sequence-based model that analyzes AS-PATH patterns and provides the highest detection capability.</td>
+                </tr>
+            </tbody>
+
+        </table>
+
+        <hr>
+
+        <h4>7. Record Limit Option</h4>
+
+        <p>
+            The optional record limit allows users to process only the first N records of a dataset.
+        </p>
+
+        <p>
+            Example:
+        </p>
+
+        <ul>
+            <li>1000 = process first 1,000 records</li>
+            <li>10000 = process first 10,000 records</li>
+            <li>Empty = process all records</li>
+        </ul>
+
+        <div class="alert alert-info">
+            Duplicate, malformed, or incomplete routes may be removed during preprocessing. Therefore, the final number analyzed can be lower than the selected limit.
+        </div>
+
+        <hr>
+
+        <h4>8. Detection Results</h4>
+
+        <p>
+            After analysis, the system provides:
+        </p>
+
+        <ul>
+            <li>Total routes analyzed</li>
+            <li>Detected hijack routes</li>
+            <li>Normal routes</li>
+            <li>Downloadable CSV file with prediction labels</li>
+        </ul>
+
+    </div>
+
+</div>
+
+{% endblock %}

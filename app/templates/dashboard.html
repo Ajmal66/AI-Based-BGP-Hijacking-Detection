@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 data-aos="fade-up">Dashboard</h2>
+    <small>
+        This dashboard provides an overview of the training dataset and the performance of the BGP hijack detection models.
+    </small>
+
+    <div class="row mt-4">
+
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5>Total Routes</h5>
+                <h2>{{ total }}</h2>
+            </div>
+        </div>
+
+         <div class="col-md-3">
+            <div class="card p-3"> 
+                <h5>Valid</h5>
+                <h2>{{ normal }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5>Hijacks</h5>
+                <h2>{{ hijacks }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5>Detection Rate</h5>
+                <h2>{{ rate }}%</h2>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Chart.js CDN -->
+   
+<div class="row mt-4">
+     <div class="col-md-6">
+        <canvas id="chart" class="mt-1"></canvas>
+    </div>
+    <div class="col-md-5">
+        <table class="table table-striped mt-3">
+        <tr>
+            <th>Model</th>
+            <th>Status</th>
+        </tr>
+
+        <tr>
+            <td>Random Forest</td>
+            <td>Active</td>
+        </tr>
+
+        <tr>
+            <td>SVM</td>
+            <td>Active</td>
+        </tr>
+
+        <tr>
+            <td>LSTM</td>
+            <td>Active</td>
+        </tr>
+        </table>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const normal = {{ normal }};
+const hijacks = {{ hijacks }};
+
+
+new Chart(document.getElementById('chart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Normal Routes', 'Hijacks'],
+        datasets: [{
+            data: [normal, hijacks]
+        }]
+    }
+});
+</script>
+
+{% endblock %}
