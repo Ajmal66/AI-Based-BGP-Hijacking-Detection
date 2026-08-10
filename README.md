@@ -1,151 +1,358 @@
-Machine Learning Models
+# AI-Based BGP Hijacking Detection System
 
-The project includes three machine learning approaches:
+> An AI/ML-based system for detecting and analyzing potential BGP hijacking events using BGP routing data, feature engineering, and machine learning models.
 
-Random Forest
+---
 
-A tree-based machine learning model used for classification using engineered BGP route features.
+## 📌 Overview
 
-Support Vector Machine (SVM)
+**Border Gateway Protocol (BGP)** is the protocol used to exchange routing information between Autonomous Systems (ASes) on the Internet.
 
-A supervised learning model used to classify routing observations based on extracted BGP features.
+BGP hijacking occurs when unauthorized or malicious routing announcements cause Internet traffic to be incorrectly redirected.
 
-LSTM
+This project develops an **AI/ML-based BGP hijacking detection system** that processes BGP routing information, extracts meaningful features, trains machine learning models, and identifies potential hijacking events through a Flask-based web application.
 
-A sequence-based deep learning model used to analyze AS-path information and identify patterns associated with potential hijacking events.
+---
 
-BGP Features
+## 🎯 Objectives
 
-The project uses features including:
+The main objectives of this project are to:
 
-Prefix length
-AS path length
-Unique AS count
-AS-path prepending indicator
-Origin position
-Origin-at-end indicator
-Peer ASN
-AS path
-Project Structure
-AI-Based-BGP-Hijacking-Detection/
-│
-├── app/
-│   └── ...
-│
-├── datasets/
-│   ├── sample/
-│   ├── processed/
-│   └── raw/
-│
-├── models/
-│   ├── lstm_maxlen.pkl
-│   ├── lstm_model.keras
-│   ├── lstm_tokenizer.pkl
-│   └── svm_model.pkl
-│
-├── results/
-│   └── README.md
-│
-├── src/
-│   ├── data_preprocessing/
-│   ├── evaluation/
-│   ├── feature_engineering/
-│   ├── ingestion/
-│   ├── model_training/
-│   ├── prediction/
-│   └── prediction_pipeline/
-│
-├── app.py
-├── requirements.txt
-├── .gitignore
-└── README.md
-Data Processing
+- Process and analyze BGP routing data
+- Clean and preprocess routing datasets
+- Extract meaningful BGP features
+- Engineer features for machine learning
+- Generate synthetic BGP hijacking scenarios
+- Train multiple machine learning models
+- Detect potential BGP hijacking events
+- Provide a web-based interface for dataset analysis
+- Generate prediction and analysis results
 
-The system processes BGP routing data through multiple stages:
+---
 
-Data ingestion
-Dataset parsing
-Data cleaning
-Feature extraction
-Feature engineering
-Model training
+## 🔄 System Architecture
+
+```text
+                         BGP Routing Data
+                                │
+                                ▼
+                    ┌─────────────────────┐
+                    │    Data Ingestion   │
+                    │ RIPE / RouteViews / │
+                    │        CSV          │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ Data Preprocessing  │
+                    │ Cleaning & Parsing  │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ Feature Engineering │
+                    │ BGP Feature         │
+                    │ Extraction          │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                  ┌──────────────────────────┐
+                  │     Model Training       │
+                  │                          │
+                  │  Random Forest           │
+                  │  Support Vector Machine  │
+                  │  LSTM                    │
+                  └────────────┬─────────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ Prediction Pipeline │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                 ┌──────────────────────────┐
+                 │ BGP Hijacking Detection  │
+                 └────────────┬─────────────┘
+                              │
+                              ▼
+                     Results & Analysis
+```
+
+---
+
+## 🤖 Machine Learning Models
+
+The project includes multiple machine learning approaches for BGP hijacking detection.
+
+### 🌲 Random Forest
+
+A tree-based supervised learning algorithm used to classify BGP routing observations using engineered routing features.
+
+### 📈 Support Vector Machine (SVM)
+
+A supervised machine learning algorithm used to classify routing observations based on extracted BGP characteristics.
+
+### 🧠 Long Short-Term Memory (LSTM)
+
+A deep learning model designed to process sequential information and identify patterns within BGP routing data.
+
+---
+
+## 🔍 BGP Features
+
+The system works with routing-related features such as:
+
+- Prefix
+- Prefix length
+- Peer IP
+- Peer ASN
+- Origin ASN
+- AS path
+- AS path length
+- Unique AS count
+- Next hop
+- Local preference
+- MED
+- AS-path prepending indicator
+- Origin position
+- Origin-at-end indicator
+- Event type
+- Classification label
+
+---
+
+## 📊 Data Processing Pipeline
+
+The system processes BGP data through the following stages:
+
+```text
+Raw BGP Data
+     │
+     ▼
+Data Ingestion
+     │
+     ▼
+Data Parsing
+     │
+     ▼
+Data Cleaning
+     │
+     ▼
+Feature Extraction
+     │
+     ▼
+Feature Engineering
+     │
+     ▼
+Model Training
+     │
+     ▼
 Prediction
-Result generation
+     │
+     ▼
+Evaluation & Results
+```
 
-Large raw and processed datasets are intentionally excluded from the repository. A small sample dataset is provided for demonstration and testing.
+---
 
-Installation
+## 📁 Project Structure
 
-Clone the repository:
+| Directory / File | Description |
+|---|---|
+| 📂 `app/` | Flask web application components |
+| 📂 `src/data_preprocessing/` | Dataset cleaning, loading, and preprocessing |
+| 📂 `src/ingestion/` | BGP data ingestion and parsing |
+| 📂 `src/feature_engineering/` | BGP feature extraction and feature construction |
+| 📂 `src/model_training/` | Machine learning model training scripts |
+| 📂 `src/prediction/` | BGP hijacking prediction and detection logic |
+| 📂 `src/prediction_pipeline/` | Dataset upload and prediction processing pipeline |
+| 📂 `src/evaluation/` | Model evaluation and performance metrics |
+| 📂 `models/` | Trained machine learning model files |
+| 📂 `datasets/sample/` | Small sample dataset for demonstration and testing |
+| 📂 `datasets/raw/` | Original BGP datasets, excluded because of size |
+| 📂 `datasets/processed/` | Processed datasets, excluded because of size |
+| 📂 `results/` | Generated prediction and analysis results |
+| 📄 `app.py` | Main Flask application entry point |
+| 📄 `requirements.txt` | Python dependencies |
+| 📄 `.gitignore` | Files excluded from version control |
+| 📄 `README.md` | Project documentation |
 
+---
+
+## 🛠️ Technologies
+
+### Programming Language
+
+- Python
+
+### Web Framework
+
+- Flask
+
+### Machine Learning
+
+- Scikit-learn
+- TensorFlow
+- Keras
+- Joblib
+
+### Data Processing
+
+- Pandas
+- NumPy
+
+### BGP Data
+
+- RIPE RIS
+- RouteViews
+- CSV-based BGP datasets
+
+### Visualization & Analysis
+
+- Matplotlib
+- Plotly
+
+---
+
+## ⚙️ Installation
+
+### 1. Clone the repository
+
+```bash
 git clone https://github.com/Ajmal66/AI-Based-BGP-Hijacking-Detection.git
+```
+
+### 2. Enter the project directory
+
+```bash
 cd AI-Based-BGP-Hijacking-Detection
+```
 
-Create a virtual environment:
+### 3. Create a virtual environment
 
+```bash
 python -m venv venv
+```
 
-Activate it on Windows:
+### 4. Activate the virtual environment
 
+**Windows:**
+
+```bash
 venv\Scripts\activate
+```
 
-Install the required dependencies:
+**Linux / macOS:**
 
+```bash
+source venv/bin/activate
+```
+
+### 5. Install dependencies
+
+```bash
 pip install -r requirements.txt
-Running the Application
+```
+
+---
+
+## ▶️ Running the Application
 
 Start the Flask application:
 
+```bash
 python app.py
+```
 
-The application will start locally and provide a web interface for interacting with the BGP hijacking detection system.
+The application provides a web-based interface for interacting with the BGP hijacking detection system.
 
-Dataset
+---
 
-The project uses BGP routing information and supports processing data associated with:
+## 📂 Dataset
 
-RIPE RIS
-RouteViews
-CSV datasets
+The project supports BGP routing data from sources and formats including:
 
-Large datasets are not included in this repository because of their size. The preprocessing and ingestion modules provide the functionality required to process the datasets.
+- RIPE RIS
+- RouteViews
+- CSV datasets
 
-Results
+Because raw and processed BGP datasets can be very large, they are **not included in this repository**.
 
-The system generates prediction and analysis results from the trained machine learning models.
+A small sample dataset is provided for demonstration and testing.
 
-Large generated result files are excluded from the repository to keep the project lightweight and reproducible.
+```text
+datasets/
+├── sample/
+├── raw/
+└── processed/
+```
 
-Technologies
-Python
-Flask
-Pandas
-NumPy
-Scikit-learn
-TensorFlow
-Keras
-Joblib
-BGP data processing tools
-HTML/CSS/JavaScript
-Project Purpose
+The preprocessing and ingestion modules can be used to process the required datasets.
 
-This project was developed as a Final Year Project to investigate the application of artificial intelligence and machine learning techniques for detecting potential BGP hijacking events.
+---
 
-Future Improvements
+## 📈 Results
 
-Potential future improvements include:
+The system generates prediction and analysis results after processing BGP routing data through the detection pipeline.
 
-Real-time BGP monitoring
-Live routing-feed integration
-Improved anomaly detection
-Additional machine learning models
-Real-time alerting
-Larger and more diverse training datasets
-Improved visualization and analytics
-Author
+Large generated result files are intentionally excluded from the repository to keep the project lightweight and manageable.
 
-Ajmal Sadiq
+Results can be reproduced by running the appropriate preprocessing, prediction, and evaluation components.
 
-Final Year Cybersecurity Project
+---
 
-GitHub: Ajmal66
+## 🔐 Repository & Data Management
+
+Large or generated files are excluded from version control, including:
+
+- Raw BGP datasets
+- Processed datasets
+- Generated prediction results
+- Application logs
+- User-uploaded files
+- Python cache files
+- Local environment files
+
+This keeps the repository focused on the **source code, models, configuration, and reproducible sample data**.
+
+---
+
+## 🚀 Future Improvements
+
+Future development may include:
+
+- Real-time BGP monitoring
+- Live routing-feed integration
+- Automated hijacking alerts
+- Improved anomaly detection
+- Additional machine learning models
+- Larger and more diverse training datasets
+- Real-time visualization
+- Improved prediction analytics
+- Automated notification mechanisms
+
+---
+
+## 🎓 Academic Project
+
+This project was developed as a **Final Year Project** to investigate the application of Artificial Intelligence and Machine Learning techniques for detecting potential BGP hijacking events.
+
+### Project Area
+
+**Cybersecurity | Network Security | BGP Security | Artificial Intelligence | Machine Learning**
+
+---
+
+## 👨‍💻 Author
+
+### Ajmal Sadiq
+
+Cybersecurity Student | Network Security | Ethical Hacking | AI/ML
+
+GitHub: [@Ajmal66](https://github.com/Ajmal66)
+
+---
+
+## ⭐ Project
+
+If you find this project useful or interesting, consider giving the repository a ⭐ on GitHub.
