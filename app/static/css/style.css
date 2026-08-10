@@ -1,0 +1,31 @@
+body {
+    background: #F8FAFC;
+    overflow-x: hidden;
+}
+
+.card, .upload-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+h2, h3 {
+    color: #1E3A8A;
+}
+.card:hover {
+    transform: translateY(-5px);
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: #1E3A8A;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #2563EB;
+}
+#chart{
+    max-height: 250px !important;
+    max-width: 100%;
+}
