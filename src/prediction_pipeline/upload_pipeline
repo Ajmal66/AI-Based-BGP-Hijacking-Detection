@@ -1,0 +1,28 @@
+from src.ingestion.universal_loader import load_any_file
+
+
+class UploadPipeline:
+
+    def run(self, file_path: str, dataset_type: str, limit: int = None):
+        """
+        Execute the complete upload pipeline.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to uploaded file.
+
+        dataset_type : str
+            csv | ripe | routeviews
+
+        Returns
+        -------
+        pandas.DataFrame
+            Feature-engineered dataframe ready for prediction.
+        """
+
+        return load_any_file(
+            file_path=file_path,
+            dataset_type=dataset_type,
+            limit=limit
+        )
