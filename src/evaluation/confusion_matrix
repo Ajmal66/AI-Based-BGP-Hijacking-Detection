@@ -1,0 +1,6 @@
+"""Helper to build and display confusion matrices."""
+from sklearn.metrics import confusion_matrix
+
+
+def get_confusion(y_true, y_pred):
+    return confusion_matrix(y_true, y_pred)
