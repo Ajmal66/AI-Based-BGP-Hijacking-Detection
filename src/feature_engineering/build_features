@@ -1,0 +1,30 @@
+from src.data_preprocessing.data_cleaner import BGPDataCleaner
+from src.feature_engineering.feature_extractor import BGPFeatureExtractor
+
+
+def main():
+
+    cleaner = BGPDataCleaner()
+
+    print("Loading cleaned dataset...")
+
+    df = cleaner.load_dataset(
+        "datasets/processed/cleaned_bgp_dataset.csv"
+    )
+
+    print("Extracting features...")
+
+    extractor = BGPFeatureExtractor()
+    df = extractor.transform(df)
+
+    output_path = "datasets/processed/feature_dataset.csv"
+
+    cleaner.save_dataset(df, output_path)
+
+    print("\nFeature Engineering Completed")
+    print(f"Saved to: {output_path}")
+    print(f"Total rows: {len(df):,}")
+
+
+if __name__ == "__main__":
+    main()
