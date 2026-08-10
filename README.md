@@ -157,6 +157,8 @@ Evaluation & Results
 
 ## 📁 Project Structure
 
+## 📁 Project Structure
+
 | Directory / File | Description |
 |---|---|
 | 📂 `app/` | Flask web application components |
@@ -165,10 +167,10 @@ Evaluation & Results
 | 📂 `src/feature_engineering/` | BGP feature extraction and feature construction |
 | 📂 `src/model_training/` | Machine learning model training scripts |
 | 📂 `src/prediction/` | BGP hijacking prediction and detection logic |
-| 📂 `src/prediction_pipeline/` | Dataset upload and prediction processing pipeline |
+| 📂 `src/prediction_pipeline/` | Dataset upload and prediction processing |
 | 📂 `src/evaluation/` | Model evaluation and performance metrics |
-| 📂 `models/` | Trained machine learning model files |
-| 📂 `datasets/sample/` | Small sample dataset for demonstration and testing |
+| 📂 `models/` | Trained machine learning models |
+| 📂 `datasets/sample/` | Small sample dataset for testing |
 | 📂 `datasets/raw/` | Original BGP datasets, excluded because of size |
 | 📂 `datasets/processed/` | Processed datasets, excluded because of size |
 | 📂 `results/` | Generated prediction and analysis results |
@@ -176,8 +178,6 @@ Evaluation & Results
 | 📄 `requirements.txt` | Python dependencies |
 | 📄 `.gitignore` | Files excluded from version control |
 | 📄 `README.md` | Project documentation |
-
----
 
 ## 🛠️ Technologies
 
@@ -331,6 +331,8 @@ Future development may include:
 - Improved prediction analytics
 - Automated notification mechanisms
 
+
+
 ---
 
 ## 🎓 Academic Project
@@ -363,3 +365,6 @@ GitHub: [@Ajmal66](https://github.com/Ajmal66)
 ## ⭐ Project
 
 If you find this project useful or interesting, consider giving the repository a ⭐ on GitHub.
+
+
+> **Note:** The trained Random Forest model is not included in the repository because of its file size. It can be regenerated using `src/model_training/train_random_forest.py`.
