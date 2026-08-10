@@ -1,0 +1,21 @@
+import pandas as pd
+
+REQUIRED_FEATURES = [
+    "prefix_length",
+    "as_path_length",
+    "unique_as_count",
+    "is_prepended",
+    "origin_position",
+    "is_origin_at_end",
+    "peer_asn",
+    "as_path"
+]
+
+def load_csv(file_path: str):
+    df = pd.read_csv(file_path)
+
+    missing = [c for c in REQUIRED_FEATURES if c not in df.columns]
+    if missing:
+        raise ValueError(f"Missing columns in CSV: {missing}")
+
+    return df
