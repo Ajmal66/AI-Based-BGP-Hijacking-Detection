@@ -1,0 +1,197 @@
+# import pandas as pd
+# import joblib
+# import tensorflow as tf
+# import os
+# import numpy as np
+# from tensorflow.keras.preprocessing.sequence import pad_sequences
+# import joblib
+# import numpy as np
+
+# def load_model(model_type):
+#     if model_type == "rf":
+#         return joblib.load("models/random_forest.pkl")
+
+#     if model_type == "svm":
+#         return joblib.load("models/svm_model.pkl")
+
+#     if model_type == "lstm":
+#         return tf.keras.models.load_model("models/lstm_model.keras")
+
+#     raise ValueError("Invalid model type")
+
+
+# def run_detection(file_path, model_type, output_path):
+
+#     df = pd.read_csv(file_path)
+
+#     model = load_model(model_type)
+
+#     features = [
+#         "prefix_length",
+#         "as_path_length",
+#         "unique_as_count",
+#         "is_prepended",
+#         "origin_position",
+#         "is_origin_at_end",
+#         "peer_asn"
+#     ]
+
+#     X = df[features]
+
+#     if model_type == "lstm":
+
+#         tokenizer = joblib.load("models/lstm_tokenizer.pkl")
+
+#         df["as_path"] = df["as_path"].astype(str)
+
+#         sequences = tokenizer.texts_to_sequences(df["as_path"].tolist())
+
+#         max_len = joblib.load("models/lstm_maxlen.pkl")
+
+#         X = pad_sequences(
+#             sequences,
+#             maxlen=max_len,
+#             padding="post"
+#         )
+
+#         X = np.expand_dims(X, axis=2)
+
+#         preds = model.predict(X)
+#         preds = (preds > 0.5).astype(int).flatten()
+#     else:
+#         preds = model.predict(X)
+    
+#     print("Sample sequence:", sequences[0])
+#     print("Max len:", max_len)
+#     print("X shape:", X.shape)
+    
+#     df["prediction"] = preds
+#     print(df["as_path"].head(5))
+#     df.to_csv(output_path, index=False)
+
+#     # ALSO SAVE HISTORY
+#     history_path = "results/history.csv"
+
+#     history_df = df.copy()
+
+#     if os.path.exists(history_path):
+#         old = pd.read_csv(history_path)
+#         history_df = pd.concat(
+#             [old, history_df],
+#             ignore_index=True
+#         )
+
+#     history_df.to_csv(
+#         history_path,
+#         index=False
+#     )
+
+#     return {
+#         "total": len(df),
+#         "hijacks": int((df["prediction"] == 1).sum()),
+#         "normal": int((df["prediction"] == 0).sum()),
+#         "file": f"download/{os.path.basename(output_path)}"
+#     }
+import pandas as pd
+import joblib
+import tensorflow as tf
+import os
+import numpy as np
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+
+# -------------------------
+# LOAD MODEL
+# -------------------------
+def load_model(model_type):
+    if model_type == "rf":
+        return joblib.load("models/random_forest.pkl")
+
+    if model_type == "svm":
+        return joblib.load("models/svm_model.pkl")
+
+    if model_type == "lstm":
+        return tf.keras.models.load_model("models/lstm_model.keras")
+
+    raise ValueError("Invalid model type")
+
+
+# -------------------------
+# RUN DETECTION
+# -------------------------
+def run_detection(df, model_type, output_path):
+
+    # df = pd.read_csv(file_path)
+    model = load_model(model_type)
+
+    # -------------------------
+    # RF / SVM (numeric features)
+    # -------------------------
+    if model_type in ["rf", "svm"]:
+
+        features = [
+            "prefix_length",
+            "as_path_length",
+            "unique_as_count",
+            "is_prepended",
+            "origin_position",
+            "is_origin_at_end",
+            "peer_asn"
+        ]
+
+        X = df[features]
+        print("Starting  prediction...")
+        preds = model.predict(X)
+        print("Finished  prediction.")
+
+    # -------------------------
+    # LSTM (sequence model)
+    # -------------------------
+    else:
+
+        tokenizer = joblib.load("models/lstm_tokenizer.pkl")
+        max_len = joblib.load("models/lstm_maxlen.pkl")
+
+        df["as_path"] = df["as_path"].astype(str)
+
+        sequences = tokenizer.texts_to_sequences(df["as_path"].tolist())
+
+        X = pad_sequences(
+            sequences,
+            maxlen=max_len,
+            padding="post"
+        )
+
+        X = np.expand_dims(X, axis=2)
+
+        preds = model.predict(X)
+
+        # convert probabilities → binary
+        preds = (preds > 0.5).astype(int).flatten()
+
+    # -------------------------
+    # SAVE OUTPUT
+    # -------------------------
+    df["prediction"] = preds
+
+    df.to_csv(output_path, index=False)
+
+    # -------------------------
+    # HISTORY FILE
+    # -------------------------
+    history_path = "results/history.csv"
+
+    history_df = df.copy()
+
+    if os.path.exists(history_path):
+        old = pd.read_csv(history_path)
+        history_df = pd.concat([old, history_df], ignore_index=True)
+
+    history_df.to_csv(history_path, index=False)
+
+    return {
+        "total": len(df),
+        "hijacks": int((df["prediction"] == 1).sum()),
+        "normal": int((df["prediction"] == 0).sum()),
+        "file": f"download/{os.path.basename(output_path)}"
+    }
